@@ -1,6 +1,7 @@
 package org.example.service;
 
 
+import org.example.model.PollyRequest;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.polly.PollyClient;
@@ -16,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 public class PollyService {
 
@@ -29,11 +31,12 @@ public class PollyService {
         this.bucketName = bucketName;
     }
 
-    //TODO Adicionar o tipo escolhido de engine e tambem a linguagem(ficar parametrizavel)
-    private InputStream synthesizeSpeech(String text, String voiceId){
+    private InputStream synthesizeSpeech(PollyRequest pollyRequest){
        SynthesizeSpeechRequest speechRequest = SynthesizeSpeechRequest.builder()
-               .text(text)
-               .voiceId(voiceId)
+               .engine(pollyRequest.getEngineId())
+               .languageCode(pollyRequest.getLanguageId())
+               .voiceId(pollyRequest.getVoiceId())
+               .text( pollyRequest.getText())
                .outputFormat(OutputFormat.MP3)
                .build();
 
@@ -41,17 +44,18 @@ public class PollyService {
        return synthRes;
     }
 
-    public String synthesizeAndUploadToS3(String text, String voiceId) throws IOException {
-        String audioKey = truncateAndAddIfens(text) + ".mp3";
+    public String synthesizeAndUploadToS3(PollyRequest pollyRequest) throws IOException {
+        String audioKey = UUID.randomUUID() + ".mp3";
 
-       try(InputStream audioStream = synthesizeSpeech(text, voiceId)){
-          uploadToS3(audioStream, audioKey);
-          return generateS3Url(audioKey);
-       }
+        try(InputStream audioStream = synthesizeSpeech(pollyRequest)){
+            uploadToS3(audioStream, audioKey);
+            return generateS3Url(audioKey);
+        }
     }
 
-    private String truncateAndAddIfens(String input) {
-        String hyphen = input.replaceAll("\\s+", "-");
+    /*Usar se necessario*/
+    private String truncateAndAddHyphen(String pollyText) {
+        String hyphen = pollyText.replaceAll("\\s+", "-");
         return hyphen.length() > 20 ? hyphen.substring(0, 20) : hyphen;
     }
 

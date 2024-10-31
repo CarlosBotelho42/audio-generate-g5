@@ -2,15 +2,25 @@ package org.example.model;
 
 public class PollyRequest {
 
-    private String text;
+    private String engineId;
+    private String languageId;
     private String voiceId;
+    private String text;
 
-    public String getText() {
-        return text;
+    public String getEngineId() {
+        return engineId;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setEngineId(String engineId) {
+        this.engineId = engineId;
+    }
+
+    public String getLanguageId() {
+        return languageId;
+    }
+
+    public void setLanguageId(String languageId) {
+        this.languageId = languageId;
     }
 
     public String getVoiceId() {
@@ -19,5 +29,13 @@ public class PollyRequest {
 
     public void setVoiceId(String voiceId) {
         this.voiceId = voiceId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

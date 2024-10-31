@@ -9,7 +9,7 @@ import software.amazon.awssdk.regions.Region;
 public class AwsServicesLambdaHandler implements RequestHandler<PollyRequest, String> {
 
     private static final String BUCKET_NAME = "audios-g5";
-    private static final Region REGION = Region.SA_EAST_1;
+    private static final Region REGION = Region.US_EAST_1;
 
     private final PollyService pollyService;
 
@@ -20,7 +20,7 @@ public class AwsServicesLambdaHandler implements RequestHandler<PollyRequest, St
     @Override
     public String handleRequest(PollyRequest pollyRequest, Context context) {
         try {
-            return pollyService.synthesizeAndUploadToS3(pollyRequest.getText(), pollyRequest.getVoiceId());
+            return pollyService.synthesizeAndUploadToS3(pollyRequest);
         } catch (Exception e) {
             context.getLogger().log("Erro ao processar a solicitação: " + e.getMessage() + "\nDetalhes: " + e);
             return "Erro ao processar a solicitação: " + e.getMessage();
